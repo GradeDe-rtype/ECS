@@ -1,0 +1,12 @@
+a.out
+vgcore*
+*.o
+*.so
+cmake-build-default
+*.gcno
+*.gcda
+.vscode
+build
+.idea
+arcade
+build
