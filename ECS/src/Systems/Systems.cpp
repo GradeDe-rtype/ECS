@@ -100,7 +100,7 @@ namespace ECS {
                 center.x /= 4.0f;
                 center.y /= 4.0f;
 
-				Components::PositionsComponents::applyRotationToQuad(position, transformComponent.m_transforms[transformComponent.IdToIndex_p[entity.id]], center);
+				Components::PositionsComponents::applyRotationToQuad(position, transformComponent.m_transforms[transformComponent.IdToIndex_p[entity.id]], center, deltaTime);
             }
         }
     }

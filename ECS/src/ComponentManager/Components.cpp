@@ -18,9 +18,13 @@
 
 namespace ECS::Components
 {
-    void PositionsComponents::applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center)
+    void PositionsComponents::applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center, float deltaTime)
     {
-        glm::mat4 rotationMatrix = glm::toMat4(rotation);
+        const float angle = glm::angle(rotation);
+        const glm::vec3 axis = glm::axis(rotation);
+        const float newAngle = angle * deltaTime;
+        const glm::quat updatedQuat = glm::angleAxis(newAngle, axis);
+        glm::mat4 rotationMatrix = glm::toMat4(updatedQuat);
 
         for (int i = 0; i < 4; ++i) {
             sf::Vector2f pos = array[i];

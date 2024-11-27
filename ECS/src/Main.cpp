@@ -15,14 +15,14 @@ int main(int argc, char *argv[])
     ECS::ECS::Init();
     char name[] = "assets/snook.jpg";
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1; i++) {
         ECS::ECS::GetInstance().AddEntity();
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double>(
             ECS::ECS::GetInstance().getEntity(i),
             ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::PositionsComponents>(),
             100.0 + i * 10,
             0.0,
-            0.0,
+            45.0,
             584.0,
             879.0
         );
@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
             ECS::ECS::GetInstance().getEntity(i),
             ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::TransformComponents>(),
             0.0,
-            40.0,
-            0.01,
+            70.0,
+            -20.0,
             0.0,
             0.0,
             0.0,

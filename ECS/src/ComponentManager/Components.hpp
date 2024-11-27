@@ -25,7 +25,7 @@ namespace ECS::Components
 
             void AddToEntity(Entity &entity, va_list args, ...) override;
             void RemoveFromEntity(Entity &entity) override;
-            static void applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center);
+            static void applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center, float deltaTime = 1);
         public:
             std::vector<std::array<sf::Vector2f, 4>> m_positions;
             std::vector<float> m_scales;
