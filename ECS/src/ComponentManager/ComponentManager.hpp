@@ -42,6 +42,8 @@ namespace ECS
                 }
             }
 
+            void RemoveAllComponents(Entity& entity);
+
             template<class C>
             [[nodiscard]] bool HasComponent(const Entity &entity) const
             {

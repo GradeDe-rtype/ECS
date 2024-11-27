@@ -16,4 +16,12 @@ namespace ECS
         RegisterComponent<Components::SpriteComponents>();
 		RegisterComponent<Components::TransformComponents>();
     }
+
+    void ComponentsManager::RemoveAllComponents(Entity& entity)
+    {
+        assert(ECS::GetInstance().HasEntity(entity));
+
+        for (auto &i: entity.componentsName)
+			p_registeredComponents[i]->RemoveFromEntity(entity);
+    }
 }

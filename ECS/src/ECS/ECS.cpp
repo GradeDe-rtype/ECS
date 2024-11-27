@@ -63,7 +63,7 @@ namespace ECS
         }
         if (it == p_entities.end())
             throw ECSError("Entity with ID = " + std::to_string(id) + " does not exist");
-        //TODO @LO: Remove all components from the entity
+		p_componentsMapper->RemoveAllComponents(*it);
         p_entities.erase(it);
     }
 
@@ -77,6 +77,7 @@ namespace ECS
         }
         if (it == p_entities.end())
             throw ECSError("Entity with ID = " + std::to_string(entity.id) + " does not exist");
+        p_componentsMapper->RemoveAllComponents(*it);
         p_entities.erase(it);
     }
 
