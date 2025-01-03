@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 
     App::Application myApp{
         {
-            sf::Vector2u(1920, 1080),
-            "Ma tête",
+            sf::Vector2u(1200, 800),
+            "ECS Test",
             0,
             32
         }

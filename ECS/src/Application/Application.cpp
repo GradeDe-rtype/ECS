@@ -13,8 +13,10 @@ namespace App {
     {
         p_window.create(
             sf::VideoMode(
-                settings.windowSize.x,
-                settings.windowSize.y,
+                sf::Vector2u(
+                    settings.windowSize.x,
+                    settings.windowSize.y
+                ),
                 settings.bytePerPixel
             ),
             settings.windowTitle,
@@ -31,22 +33,17 @@ namespace App {
 
     void Application::run()
     {
-        sf::Event event{};
-        sf::Font font;
+        sf::Font font("assets/coucou.ttf");
 
-        font.loadFromFile("assets/coucou.ttf");
-        sf::Text text;
-        text.setFont(font);
-        text.setCharacterSize(24);
+        sf::Text text(font, "FPS: 0", 24);
         text.setFillColor(sf::Color::Red);
-        text.setPosition(10, 10);
-        text.setString("FPS: 0");
+        text.setPosition(sf::Vector2f(10, 10));
         sf::Clock p_clock;
 
         while (p_window.isOpen()) {
             p_window.clear();
-            while (p_window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
+            while (auto event = p_window.pollEvent()) {
+                if (event->is<sf::Event::Closed>())
                     p_window.close();
             }
             p_window.draw(text);

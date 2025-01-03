@@ -60,15 +60,15 @@ namespace ECS::Components
             std::vector<glm::quat> m_transforms;
     };
 
-	class ScriptComponents : public AComponent {
-	    public:
-	    	ScriptComponents() = default;
-	    	~ScriptComponents() override = default;
+	// class ScriptComponents : public AComponent {
+	//     public:
+	//     	ScriptComponents() = default;
+	//     	~ScriptComponents() override = default;
 
-	    	void AddToEntity(Entity& entity, va_list args, ...) override;
-	    	void RemoveFromEntity(Entity& entity) override;
-	    public:
-	    	std::vector<std::function<void(Entity& entity)>> m_scripts;
-	};
+	//     	void AddToEntity(Entity& entity, va_list args, ...) override;
+	//     	void RemoveFromEntity(Entity& entity) override;
+	//     public:
+	//     	std::vector<std::function<void(Entity& entity)>> m_scripts;
+	// };
 
 } // namespace ECS::Components

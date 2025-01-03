@@ -11,7 +11,7 @@ set(SFML_LIBRARIES
 
 # Export variables for CMake
 set(SFML_FOUND TRUE)
-set(SFML_VERSION "2.6.2")
+set(SFML_VERSION "3.1.0")
 
 # Set include directories and libraries
 set(SFML_INCLUDE_DIRS ${SFML_INCLUDE_DIR})

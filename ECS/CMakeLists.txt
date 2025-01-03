@@ -1,20 +1,20 @@
 cmake_minimum_required(VERSION 3.12)
 project(MyProject)
 
-set(CMAKE_MODULE_PATH ".")
-set(CMAKE_PREFIX_PATH "C:/Users/Hardeol/Downloads/SFML")
+# set(CMAKE_MODULE_PATH ".")
+# set(CMAKE_PREFIX_PATH "C:/Users/Hardeol/Downloads/SFML")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    add_compile_options(-std=c++20)
-endif()
+# if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+#     add_compile_options(-std=c++20)
+# endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include_directories(glm INTERFACE "C:/Users/Hardeol/Downloads/glm")
-include_directories("C:/Users/Hardeol/Downloads/SFML/include")
-find_package(SFML 2.6.2 COMPONENTS graphics window system REQUIRED)
+# include_directories(glm INTERFACE "C:/Users/Hardeol/Downloads/glm")
+# include_directories("C:/Users/Hardeol/Downloads/SFML/include")
+# find_package(SFML 3 COMPONENTS graphics window system REQUIRED)
 
 add_executable(MyProject
     src/Main.cpp
