@@ -5,3 +5,4 @@ GraphicInterface/rtype
 /.vs
 /ECS/.vs
 /GraphicInterface
+build/

@@ -15,6 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # include_directories(glm INTERFACE "C:/Users/Hardeol/Downloads/glm")
 # include_directories("C:/Users/Hardeol/Downloads/SFML/include")
 # find_package(SFML 3 COMPONENTS graphics window system REQUIRED)
+find_package(Lua REQUIRED)
 
 add_executable(MyProject
     src/Main.cpp
@@ -32,6 +33,8 @@ add_executable(MyProject
 
 target_include_directories(MyProject PUBLIC include/Interface)
 target_include_directories(MyProject PUBLIC include/Abstract)
+target_include_directories(MyProject PRIVATE ${LUA_INCLUDE_DIR})
+target_link_libraries(MyProject PRIVATE ${LUA_LIBRARIES})
 target_include_directories(MyProject PRIVATE src)
 target_link_libraries(MyProject PRIVATE sfml-graphics sfml-window sfml-system)
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})

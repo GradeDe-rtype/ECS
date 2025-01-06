@@ -113,18 +113,16 @@ namespace ECS {
 
         lua_pushnumber(L, deltaTime);
         lua_setglobal(L, "deltaTime");
-        lua_getglobal(L, "Update");
 
         for (auto entity: _entities) {
             if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::ScriptComponents>(entity)) {
                 lua_rawgeti(L, LUA_REGISTRYINDEX, scriptComponent.m_scripts[scriptComponent.IdToIndex_p[entity.id]]);
                 lua_pushnumber(L, entity.id);
-
-                if (lua_isfunction(L, -1)) {
-                    if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-                        std::cerr << "Error calling Update function: " << lua_tostring(L, -1) << std::endl;
-                        lua_pop(L, 1);
-                    }
+                if (!lua_isfunction(L, -1))
+                    continue;
+                if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+                    std::cerr << "Error calling Update function: " << lua_tostring(L, -1) << std::endl;
+                    lua_pop(L, 1);
                 }
             }
         }
