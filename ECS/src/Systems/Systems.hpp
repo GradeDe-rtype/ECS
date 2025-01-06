@@ -61,6 +61,13 @@ namespace ECS {
 	    	~RotateSystem() final = default;
 	    	void Update(float deltaTime) final;
 	};
+
+    class ScriptSystem final : public ASystems {
+        public:
+            ScriptSystem() = default;
+            ~ScriptSystem() final = default;
+            void Update(float deltaTime) final;
+    };
 } // ECS
 
 #endif //MYPROJECT_SYSTEMS_HPP

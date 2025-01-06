@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <lua.hpp>
 
 #include "ECS/Entity.h"
 #include "Application/Application.hpp"
@@ -43,6 +44,7 @@ namespace ECS
             [[nodiscard]] Entity &getEntity(std::size_t id);
             [[nodiscard]] std::shared_ptr<ComponentsManager> getComponentsMapper();
             [[nodiscard]] std::shared_ptr<SystemsManager> getSystemsManager();
+            [[nodiscard]] lua_State *getLuaLState();
             [[maybe_unused]] void RemoveEntity(const Entity &entity);
 
             [[maybe_unused]] void PrintEntities() const; // * Use for debug
@@ -50,10 +52,11 @@ namespace ECS
             App::Application *App = nullptr;
         private:
             ECS();
-            ~ECS() = default;
+            ~ECS();
         private:
             std::vector<Entity> p_entities;
             std::shared_ptr<SystemsManager> p_systemsManager;
             std::shared_ptr<ComponentsManager> p_componentsMapper;
+            lua_State *p_luaState;
     };
 }

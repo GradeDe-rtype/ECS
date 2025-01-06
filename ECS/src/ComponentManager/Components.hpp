@@ -13,12 +13,13 @@
 #include <SFML/Graphics.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+#include <lua.hpp>
 
 #include "AComponent.hpp"
 
 namespace ECS::Components
 {
-    class PositionsComponents: public AComponent {
+    class PositionsComponents final: public AComponent {
         public:
             PositionsComponents() = default;
             ~PositionsComponents() override = default;
@@ -33,7 +34,7 @@ namespace ECS::Components
             std::vector<glm::vec2> m_sizes;
     };
 
-    class SpriteComponents: public AComponent {
+    class SpriteComponents final: public AComponent {
         public:
             SpriteComponents() = default;
             ~SpriteComponents() override = default;
@@ -47,7 +48,7 @@ namespace ECS::Components
             std::unordered_map<std::string, std::size_t> _alreadyLoaded;
     };
 
-    class TransformComponents: public AComponent {
+    class TransformComponents final: public AComponent {
         public:
             TransformComponents() = default;
             ~TransformComponents() override = default;
@@ -60,15 +61,15 @@ namespace ECS::Components
             std::vector<glm::quat> m_transforms;
     };
 
-	// class ScriptComponents : public AComponent {
-	//     public:
-	//     	ScriptComponents() = default;
-	//     	~ScriptComponents() override = default;
+	class ScriptComponents final: public AComponent {
+	    public:
+	    	ScriptComponents() = default;
+	    	~ScriptComponents() override = default;
 
-	//     	void AddToEntity(Entity& entity, va_list args, ...) override;
-	//     	void RemoveFromEntity(Entity& entity) override;
-	//     public:
-	//     	std::vector<std::function<void(Entity& entity)>> m_scripts;
-	// };
+	    	void AddToEntity(Entity& entity, va_list args, ...) override;
+	    	void RemoveFromEntity(Entity& entity) override;
+        public:
+            std::vector<int> m_scripts;
+	};
 
 } // namespace ECS::Components

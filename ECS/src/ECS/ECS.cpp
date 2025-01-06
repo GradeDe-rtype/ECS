@@ -116,9 +116,21 @@ namespace ECS
         return p_systemsManager;
     }
 
+    lua_State *ECS::getLuaLState()
+    {
+        return p_luaState;
+    }
+
     ECS::ECS()
     {
         p_componentsMapper = std::make_shared<ComponentsManager>();
         p_systemsManager = std::make_shared<SystemsManager>();
+        p_luaState = luaL_newstate();
+        luaL_openlibs(p_luaState);
+    }
+
+    ECS::~ECS()
+    {
+        lua_close(p_luaState);
     }
 }

@@ -138,4 +138,33 @@ namespace ECS::Components
         entity.componentsName.erase(typeid(TransformComponents).name());
         IdToIndex_p.erase(index);
     }
+
+    void ScriptComponents::AddToEntity(Entity &entity, va_list args, ...)
+    {
+        va_start(args, args);
+        std::string path(va_arg(args, char *));
+        lua_State *L = ECS::ECS::GetInstance().getLuaLState();
+        luaL_loadfile(L, path.c_str());
+        lua_getglobal(L, "Update");
+
+        if (lua_isfunction(L, -1)) {
+            int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+            m_scripts.push_back(ref);
+        } else {
+            throw std::runtime_error("Failed to load script: " + path + " (Update function not found)");
+        }
+
+        entity.componentsName.insert(typeid(ScriptComponents).name());
+    }
+
+    void ScriptComponents::RemoveFromEntity(Entity &entity)
+    {
+        std::size_t index = IdToIndex_p[entity.id];
+        lua_State *L = ECS::ECS::GetInstance().getLuaLState();
+        
+        luaL_unref(L, LUA_REGISTRYINDEX, m_scripts[index]);
+        m_scripts.erase(m_scripts.begin() + index);
+        entity.componentsName.erase(typeid(ScriptComponents).name());
+        IdToIndex_p.erase(index);
+    }
 }
