@@ -18,6 +18,7 @@ namespace ECS {
 		_systems[(std::size_t)SystemType::MOVEMENT] = std::make_unique<MoveSystem>();
 		_systems[(std::size_t)SystemType::ROTATION] = std::make_unique<RotateSystem>();
         _systems[(std::size_t)SystemType::SPRITE] = std::make_unique<DrawSystem>();
+        _systems[(std::size_t)SystemType::SCRIPT] = std::make_unique<ScriptSystem>();
     }
 
     void SystemsManager::Update(float deltaTime)

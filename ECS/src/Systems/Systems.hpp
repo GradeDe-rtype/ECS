@@ -29,6 +29,7 @@ namespace ECS {
 				MOVEMENT,
 				ROTATION,
                 SPRITE,
+                SCRIPT,
                 COUNT
             };
             SystemsManager();

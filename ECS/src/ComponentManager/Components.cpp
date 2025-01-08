@@ -157,7 +157,7 @@ namespace ECS::Components
         } else {
             throw std::runtime_error("Failed to load script: " + path + " (Update function not found)");
         }
-
+        (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::SCRIPT]->AddEntity(entity);
         entity.componentsName.insert(typeid(ScriptComponents).name());
     }
 
