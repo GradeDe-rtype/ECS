@@ -8,6 +8,7 @@
 #include "Components.hpp"
 #include "ECS/Entity.h"
 #include "ECS/ECS.hpp"
+#include "ComponentManager.hpp"
 
 #include <typeinfo>
 #include <glm/glm.hpp>
@@ -115,7 +116,7 @@ namespace ECS::Components
         double degree = va_arg(args, double);
 		if (degree != 0.0)
 			(*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::ROTATION]->AddEntity(entity);
-        auto axis = glm::vec3(0.0f, 0.0f, 1.0f);
+        glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
         m_transforms.emplace_back(glm::angleAxis(glm::radians(static_cast<float>(degree)), axis));
         m_scales.emplace_back(va_arg(args, double));
 
@@ -137,6 +138,16 @@ namespace ECS::Components
         m_transforms.pop_back();
         entity.componentsName.erase(typeid(TransformComponents).name());
         IdToIndex_p.erase(index);
+    }
+
+    ScriptComponents::ScriptComponents()
+    {
+        lua_State *L = ECS::ECS::GetInstance().getLuaLState();
+        
+        lua_register(L, "move", move);
+        lua_register(L, "rotate", rotate);
+        lua_register(L, "place", place);
+        lua_register(L, "rotateFixed", rotateFixed);
     }
 
     void ScriptComponents::AddToEntity(Entity &entity, va_list args, ...)
@@ -166,5 +177,52 @@ namespace ECS::Components
         m_scripts.erase(m_scripts.begin() + index);
         entity.componentsName.erase(typeid(ScriptComponents).name());
         IdToIndex_p.erase(index);
+    }
+
+    int ScriptComponents::move(lua_State *L)
+    {
+        auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+
+        transformComponent.m_positions[lua_tonumber(L, 1)] = glm::vec2(lua_tonumber(L, 2), lua_tonumber(L, 3));
+        return 0;
+    }
+
+    int ScriptComponents::rotate(lua_State *L)
+    {
+        auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+        const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        transformComponent.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+        return 0;
+    }
+
+    int ScriptComponents::place(lua_State *L)
+    {
+        PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+        glm::vec2 size = PositionsComponents.m_sizes[lua_tonumber(L, 1)];
+        sf::Vector2f pos(lua_tonumber(L, 2), lua_tonumber(L, 3));
+
+        std::array<sf::Vector2f, 4> array = {
+            pos,
+            sf::Vector2f(pos.x + size.x, pos.y),
+            sf::Vector2f(pos.x + size.x, pos.y + size.y),
+            sf::Vector2f(pos.x, pos.y + size.y)
+        };
+        PositionsComponents.m_positions[lua_tonumber(L, 1)] = array;
+        return 0;
+    }
+
+    int ScriptComponents::rotateFixed(lua_State *L)
+    {
+        int entityId = lua_tonumber(L, 1);
+        PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+        glm::vec2 size = PositionsComponents.m_sizes[entityId];
+        sf::Vector2f pos = PositionsComponents.m_positions[entityId][0];
+        sf::Vector2f center(pos.x + size.x / 2, pos.y + size.y / 2);
+        const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        PositionsComponents.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+        PositionsComponents::applyRotationToQuad(PositionsComponents.m_positions[entityId], PositionsComponents.m_transforms[entityId], center);
+        return 0;
     }
 }

@@ -105,7 +105,6 @@ namespace ECS {
         }
     }
 
-
     void ScriptSystem::Update(float deltaTime)
     {
         auto &scriptComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::ScriptComponents>();
@@ -120,7 +119,7 @@ namespace ECS {
                 lua_pushnumber(L, entity.id);
                 if (!lua_isfunction(L, -1))
                     continue;
-                if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+                if (!lua_pcall(L, 1, 0, 0)) {
                     std::cerr << "Error calling Update function: " << lua_tostring(L, -1) << std::endl;
                     lua_pop(L, 1);
                 }

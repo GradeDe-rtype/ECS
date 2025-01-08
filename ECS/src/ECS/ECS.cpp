@@ -123,10 +123,10 @@ namespace ECS
 
     ECS::ECS()
     {
-        p_componentsMapper = std::make_shared<ComponentsManager>();
-        p_systemsManager = std::make_shared<SystemsManager>();
         p_luaState = luaL_newstate();
         luaL_openlibs(p_luaState);
+        p_componentsMapper = std::make_shared<ComponentsManager>();
+        p_systemsManager = std::make_shared<SystemsManager>();
     }
 
     ECS::~ECS()

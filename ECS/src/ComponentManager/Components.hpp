@@ -63,13 +63,19 @@ namespace ECS::Components
 
 	class ScriptComponents final: public AComponent {
 	    public:
-	    	ScriptComponents() = default;
+	    	ScriptComponents();
 	    	~ScriptComponents() override = default;
 
 	    	void AddToEntity(Entity& entity, va_list args, ...) override;
 	    	void RemoveFromEntity(Entity& entity) override;
         public:
             std::vector<int> m_scripts;
-	};
+        private:
+            static int move(lua_State *L);
+            static int rotate(lua_State *L);
+            static int rotateFixed(lua_State *L);
+            static int place(lua_State *L);
+            //TODO @LO: int scale(lua_State *L);
+    };
 
 } // namespace ECS::Components
