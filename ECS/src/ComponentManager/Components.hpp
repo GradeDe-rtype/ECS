@@ -11,6 +11,10 @@
 #include <vector>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
+#include <typeinfo>
+#include <glm/glm.hpp>
+#include <iostream>
+#include <glm/gtc/constants.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <lua.hpp>
@@ -73,9 +77,10 @@ namespace ECS::Components
         private:
             static int move(lua_State *L);
             static int rotate(lua_State *L);
-            static int rotateFixed(lua_State *L);
+            static int setRotation(lua_State *L);
             static int place(lua_State *L);
             //TODO @LO: int scale(lua_State *L);
+            //TODO @LO: int setSize(lua_State *L);
     };
 
 } // namespace ECS::Components

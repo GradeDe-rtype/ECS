@@ -10,13 +10,6 @@
 #include "ECS/ECS.hpp"
 #include "ComponentManager.hpp"
 
-#include <typeinfo>
-#include <glm/glm.hpp>
-#include <iostream>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/constants.hpp>
-#include <glm/gtx/quaternion.hpp>
-
 namespace ECS::Components
 {
     void PositionsComponents::applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center, float deltaTime)
@@ -143,11 +136,11 @@ namespace ECS::Components
     ScriptComponents::ScriptComponents()
     {
         lua_State *L = ECS::ECS::GetInstance().getLuaLState();
-        
+
         lua_register(L, "move", move);
         lua_register(L, "rotate", rotate);
         lua_register(L, "place", place);
-        lua_register(L, "rotateFixed", rotateFixed);
+        lua_register(L, "setRotation", setRotation);
     }
 
     void ScriptComponents::AddToEntity(Entity &entity, va_list args, ...)
@@ -181,48 +174,104 @@ namespace ECS::Components
 
     int ScriptComponents::move(lua_State *L)
     {
-        auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
-
-        transformComponent.m_positions[lua_tonumber(L, 1)] = glm::vec2(lua_tonumber(L, 2), lua_tonumber(L, 3));
+        try {
+            if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
+                    ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
+                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>(),
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                );
+            }
+            TransformComponents &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+            transformComponent.m_positions[lua_tonumber(L, 1)] = glm::vec2(lua_tonumber(L, 2), lua_tonumber(L, 3));
+        } catch (const ECS::ECSError &e) {
+            std::cerr << e.what() << std::endl;
+        }
         return 0;
     }
 
     int ScriptComponents::rotate(lua_State *L)
     {
-        auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
-        const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
-
-        transformComponent.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+        try {
+            if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
+                    ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
+                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>(),
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                );
+            }
+            TransformComponents &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+            const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
+            transformComponent.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+        } catch (const ECS::ECSError &e) {
+            std::cerr << e.what() << std::endl;
+        }
         return 0;
     }
 
     int ScriptComponents::place(lua_State *L)
     {
-        PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
-        glm::vec2 size = PositionsComponents.m_sizes[lua_tonumber(L, 1)];
-        sf::Vector2f pos(lua_tonumber(L, 2), lua_tonumber(L, 3));
+        try {
+            if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::PositionsComponents, double, double, double, double, double>(
+                    ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
+                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>(),
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                );
+            }
+            PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+            glm::vec2 size = PositionsComponents.m_sizes[lua_tonumber(L, 1)];
+            sf::Vector2f pos(lua_tonumber(L, 2), lua_tonumber(L, 3));
 
-        std::array<sf::Vector2f, 4> array = {
-            pos,
-            sf::Vector2f(pos.x + size.x, pos.y),
-            sf::Vector2f(pos.x + size.x, pos.y + size.y),
-            sf::Vector2f(pos.x, pos.y + size.y)
-        };
-        PositionsComponents.m_positions[lua_tonumber(L, 1)] = array;
+            std::array<sf::Vector2f, 4> array = {
+                pos,
+                sf::Vector2f(pos.x + size.x, pos.y),
+                sf::Vector2f(pos.x + size.x, pos.y + size.y),
+                sf::Vector2f(pos.x, pos.y + size.y)
+            };
+            PositionsComponents.m_positions[lua_tonumber(L, 1)] = array;
+        } catch (const ECS::ECSError &e) {
+            std::cerr << e.what() << std::endl;
+        }
         return 0;
     }
 
-    int ScriptComponents::rotateFixed(lua_State *L)
+    int ScriptComponents::setRotation(lua_State *L)
     {
-        int entityId = lua_tonumber(L, 1);
-        PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
-        glm::vec2 size = PositionsComponents.m_sizes[entityId];
-        sf::Vector2f pos = PositionsComponents.m_positions[entityId][0];
-        sf::Vector2f center(pos.x + size.x / 2, pos.y + size.y / 2);
-        const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
+        try {
+            int entityId = lua_tonumber(L, 1);
+            if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(ECS::GetInstance().getEntity(entityId))) {
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::PositionsComponents, double, double, double, double, double>(
+                    ECS::GetInstance().getEntity(entityId),
+                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>(),
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                );
+            }
+            PositionsComponents &PositionsComponents = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+            glm::vec2 size = PositionsComponents.m_sizes[entityId];
+            sf::Vector2f pos = PositionsComponents.m_positions[entityId][0];
+            sf::Vector2f center(pos.x + size.x / 2, pos.y + size.y / 2);
+            const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
 
-        PositionsComponents.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
-        PositionsComponents::applyRotationToQuad(PositionsComponents.m_positions[entityId], PositionsComponents.m_transforms[entityId], center);
+            PositionsComponents.m_transforms[entityId] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+            PositionsComponents::applyRotationToQuad(PositionsComponents.m_positions[entityId], PositionsComponents.m_transforms[entityId], center);
+        } catch (const ECS::ECSError &e) {
+            std::cerr << e.what() << std::endl;
+        }
         return 0;
     }
 }

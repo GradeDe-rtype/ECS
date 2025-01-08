@@ -22,6 +22,7 @@ namespace App {
             settings.windowTitle,
             sf::Style::Close
         );
+        p_window.setPosition(sf::Vector2i(0, 0));
         p_window.setFramerateLimit(settings.frameRateLimit);
     }
 
