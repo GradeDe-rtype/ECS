@@ -17,6 +17,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # find_package(SFML 3 COMPONENTS graphics window system REQUIRED)
 find_package(Lua REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CRITERION REQUIRED criterion)
+
+# Ajouter le sous-dossier des tests
+add_subdirectory(tests)
+
 add_executable(MyProject
     src/Main.cpp
     src/Application/Application.cpp

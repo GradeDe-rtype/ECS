@@ -2,6 +2,9 @@
 set(SFML_INCLUDE_DIR "C:/Users/Hardeol/Downloads/SFML/include")
 set(SFML_LIB_DIR "C:/Users/Hardeol/Downloads/SFML/lib")
 
+# set(SFML_INCLUDE_DIR "/home/aeliondw/SFML/include")
+# set(SFML_LIB_DIR "/home/aeliondw/SFML/lib")
+
 # Specify SFML libraries
 set(SFML_LIBRARIES
     ${SFML_LIB_DIR}/libsfml-graphics.a
