@@ -7,16 +7,16 @@
 
 #include "Application.hpp"
 #include "ECS/ECS.hpp"
+#include "ComponentManager/ComponentManager.hpp"
+#include "ComponentManager/Components.hpp"
 
 namespace App {
     [[maybe_unused]] Application::Application(const AppSettings& settings)
     {
         p_window.create(
             sf::VideoMode(
-                sf::Vector2u(
-                    settings.windowSize.x,
-                    settings.windowSize.y
-                ),
+                settings.windowSize.x,
+                settings.windowSize.y,
                 settings.bytePerPixel
             ),
             settings.windowTitle,
@@ -34,23 +34,33 @@ namespace App {
 
     void Application::run()
     {
-        sf::Font font("assets/coucou.ttf");
-
-        sf::Text text(font, "FPS: 0", 24);
-        text.setFillColor(sf::Color::Red);
-        text.setPosition(sf::Vector2f(10, 10));
         sf::Clock p_clock;
+        sf::Event event;
+        std::size_t bgId = ECS::ECS::GetInstance().AddEntity();
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
+            ECS::ECS::GetInstance().getEntity(bgId),
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::SpriteComponents>(),
+            (char *)"assets/background.png"
+        );
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double>(
+            ECS::ECS::GetInstance().getEntity(bgId),
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::PositionsComponents>(),
+            0.0,
+            0.0,
+            0.0,
+            1080.0,
+            1920.0
+        );
 
         while (p_window.isOpen()) {
             p_window.clear();
-            while (auto event = p_window.pollEvent()) {
-                if (event->is<sf::Event::Closed>())
+            while (p_window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
                     p_window.close();
             }
-            p_window.draw(text);
 			float deltaTime = p_clock.restart().asSeconds();
             ECS::ECS::GetInstance().getSystemsManager()->Update(deltaTime);
-            text.setString("FPS: " + std::to_string(1.0f / deltaTime));
             p_window.display();
         }
     }

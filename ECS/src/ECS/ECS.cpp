@@ -7,6 +7,7 @@
 
 #include "ECS.hpp"
 #include "ComponentManager/ComponentManager.hpp"
+#include "ComponentManager/Components.hpp"
 
 #include <iostream>
 #include <utility>
@@ -45,12 +46,15 @@ namespace ECS
         return *s_Instance;
     }
 
-    void ECS::AddEntity()
+    std::size_t ECS::AddEntity()
     {
+        static std::size_t id = 0;
+
         p_entities.push_back({
-            .id=p_entities.size(),
+            .id=id,
             .componentsName={}
         });
+        return id++;
     }
 
     void ECS::RemoveEntity(std::size_t id)
@@ -125,6 +129,11 @@ namespace ECS
     {
         p_luaState = luaL_newstate();
         luaL_openlibs(p_luaState);
+
+        lua_register(p_luaState, "move", Components::ScriptComponents::move);
+        lua_register(p_luaState, "rotate", Components::ScriptComponents::rotate);
+        lua_register(p_luaState, "place", Components::ScriptComponents::place);
+        lua_register(p_luaState, "setRotation", Components::ScriptComponents::setRotation);
         p_componentsMapper = std::make_shared<ComponentsManager>();
         p_systemsManager = std::make_shared<SystemsManager>();
     }

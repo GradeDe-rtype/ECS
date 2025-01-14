@@ -30,6 +30,7 @@ namespace ECS {
 				ROTATION,
                 SPRITE,
                 SCRIPT,
+                COLLISION,
                 COUNT
             };
             SystemsManager();
@@ -67,6 +68,13 @@ namespace ECS {
         public:
             ScriptSystem() = default;
             ~ScriptSystem() final = default;
+            void Update(float deltaTime) final;
+    };
+
+    class CollisionSystem final : public ASystems {
+        public:
+            CollisionSystem() = default;
+            ~CollisionSystem() final = default;
             void Update(float deltaTime) final;
     };
 } // ECS

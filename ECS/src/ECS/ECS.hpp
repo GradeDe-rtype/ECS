@@ -38,7 +38,7 @@ namespace ECS
             static void Shutdown();
             static ECS &GetInstance();
 
-            void AddEntity();
+            std::size_t AddEntity();
             void RemoveEntity(std::size_t id);
             [[nodiscard]] bool HasEntity(const Entity& entity) const;
             [[nodiscard]] Entity &getEntity(std::size_t id);
@@ -59,4 +59,4 @@ namespace ECS
             std::shared_ptr<ComponentsManager> p_componentsMapper;
             lua_State *p_luaState;
     };
-}
+} // namespace ECS

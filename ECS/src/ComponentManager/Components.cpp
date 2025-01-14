@@ -9,6 +9,7 @@
 #include "ECS/Entity.h"
 #include "ECS/ECS.hpp"
 #include "ComponentManager.hpp"
+#include <fstream>
 
 namespace ECS::Components
 {
@@ -61,7 +62,11 @@ namespace ECS::Components
         std::size_t index = IdToIndex_p[entity.id];
 
         std::swap(m_positions[index], m_positions.back());
+        std::swap(m_sizes[index], m_sizes.back());
+        std::swap(m_transforms[index], m_transforms.back());
         m_positions.pop_back();
+        m_sizes.pop_back();
+        m_transforms.pop_back();
         entity.componentsName.erase(typeid(PositionsComponents).name());
         IdToIndex_p.erase(index);
     }
@@ -75,7 +80,7 @@ namespace ECS::Components
             m_texture.emplace_back(sf::Texture(), m_vertexArray.size());
             if (!m_texture.back().first.loadFromFile(path))
                 throw std::runtime_error("Failed to load texture: " + path);
-            m_vertexArray.emplace_back(sf::PrimitiveType::Triangles, 4);
+            m_vertexArray.emplace_back(sf::PrimitiveType::Quads, 4);
             _alreadyLoaded.emplace(path, m_texture.size() - 1);
             IdToIndex_p[entity.id] = m_texture.size() - 1;
         } else {
@@ -92,8 +97,10 @@ namespace ECS::Components
     void SpriteComponents::RemoveFromEntity(Entity &entity)
     {
         std::size_t index = IdToIndex_p[entity.id];
+        auto& vertexArray = m_vertexArray[m_texture[index].second];
 
-        entity.componentsName.erase(typeid(PositionsComponents).name());
+        vertexArray.resize(vertexArray.getVertexCount() - 4);
+        entity.componentsName.erase(typeid(SpriteComponents).name());
         IdToIndex_p.erase(index);
     }
 
@@ -133,16 +140,6 @@ namespace ECS::Components
         IdToIndex_p.erase(index);
     }
 
-    ScriptComponents::ScriptComponents()
-    {
-        lua_State *L = ECS::ECS::GetInstance().getLuaLState();
-
-        lua_register(L, "move", move);
-        lua_register(L, "rotate", rotate);
-        lua_register(L, "place", place);
-        lua_register(L, "setRotation", setRotation);
-    }
-
     void ScriptComponents::AddToEntity(Entity &entity, va_list args, ...)
     {
         va_start(args, args);
@@ -153,7 +150,8 @@ namespace ECS::Components
 
         if (lua_isfunction(L, -1)) {
             int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-            m_scripts.push_back(ref);
+            m_scripts.emplace_back(ref);
+            IdToIndex_p[entity.id] = m_scripts.size() - 1;
         } else {
             throw std::runtime_error("Failed to load script: " + path + " (Update function not found)");
         }
@@ -273,5 +271,37 @@ namespace ECS::Components
             std::cerr << e.what() << std::endl;
         }
         return 0;
+    }
+
+    void ColliderComponents::AddToEntity(Entity &entity, va_list args, ...)
+    {
+        static std::size_t id = 0;
+
+        va_start(args, args);
+        float top = va_arg(args, double);
+        float bottom = va_arg(args, double);
+        float left = va_arg(args, double);
+        float right = va_arg(args, double);
+        va_end(args);
+
+        m_colliders.emplace_back(entity, Hitbox{top, bottom, left, right});
+        IdToIndex_p[entity.id] = m_colliders.size() - 1;
+        entity.componentsName.insert(typeid(ColliderComponents).name());
+        std::string path = "collisionScript" + std::to_string(id) + ".lua";
+        std::ofstream file(path);
+        file << "function onCollision(entity1, entity2) end";
+        file.close();
+        m_index[entity.id] = id;
+        (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::COLLISION]->AddEntity(entity);
+        id++;
+    }
+
+    void ColliderComponents::RemoveFromEntity(Entity &entity)
+    {
+        std::size_t index = IdToIndex_p[entity.id];
+
+        m_colliders.erase(m_colliders.begin() + index);
+        entity.componentsName.erase(typeid(ColliderComponents).name());
+        IdToIndex_p.erase(index);
     }
 }

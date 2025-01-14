@@ -67,20 +67,38 @@ namespace ECS::Components
 
 	class ScriptComponents final: public AComponent {
 	    public:
-	    	ScriptComponents();
+	    	ScriptComponents() = default;
 	    	~ScriptComponents() override = default;
 
 	    	void AddToEntity(Entity& entity, va_list args, ...) override;
 	    	void RemoveFromEntity(Entity& entity) override;
-        public:
-            std::vector<int> m_scripts;
-        private:
+        
             static int move(lua_State *L);
             static int rotate(lua_State *L);
             static int setRotation(lua_State *L);
             static int place(lua_State *L);
             //TODO @LO: int scale(lua_State *L);
             //TODO @LO: int setSize(lua_State *L);
+        public:
+            std::vector<int> m_scripts;
     };
 
+    class ColliderComponents final: public AComponent {
+        public:
+            struct Hitbox {
+                float top;
+                float bottom;
+                float left;
+                float right;
+            };
+
+            ColliderComponents() = default;
+            ~ColliderComponents() override = default;
+
+            void AddToEntity(Entity &entity, va_list args, ...) override;
+            void RemoveFromEntity(Entity &entity) override;
+        public:
+            std::vector<std::pair<Entity, Hitbox>> m_colliders;
+            std::unordered_map<std::size_t, std::size_t> m_index;
+    };
 } // namespace ECS::Components

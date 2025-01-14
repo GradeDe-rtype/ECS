@@ -127,4 +127,29 @@ namespace ECS {
             }
         }
     }
+
+    void CollisionSystem::Update(float deltaTime)
+    {
+        auto &colliderComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::ColliderComponents>();
+        lua_State *L = ECS::ECS::GetInstance().getLuaLState();
+
+        for (auto &[id1, entity] : colliderComponent.m_colliders) {
+            for (auto &[id2, other] : colliderComponent.m_colliders) {
+                if (entity.top < other.bottom && entity.bottom > other.top && entity.left < other.right && entity.right > other.left) {
+                    std::string path = "collisionScript" + std::to_string(colliderComponent.m_index[id1.id]) + ".lua";
+                    luaL_loadfile(L, path.c_str());
+                    lua_getglobal(L, "onCollision");
+                    lua_pushnumber(L, id1.id);
+                    lua_pushnumber(L, id2.id);
+                    if (!lua_pcall(L, 2, 0, 0)) {
+                        std::cerr << "Error calling Update function: " << lua_tostring(L, -1) << std::endl;
+                        lua_pop(L, 1);
+                    }
+                    lua_pop(L, 1);
+                    lua_pop(L, 1);
+                    break;
+                }
+            }
+        }
+    }
 } // ECS

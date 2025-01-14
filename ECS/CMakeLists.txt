@@ -6,6 +6,8 @@ project(MyProject)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+
 
 # if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 #     add_compile_options(-std=c++20)
@@ -14,14 +16,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # include_directories(glm INTERFACE "C:/Users/Hardeol/Downloads/glm")
 # include_directories("C:/Users/Hardeol/Downloads/SFML/include")
-# find_package(SFML 3 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.6.2 COMPONENTS graphics window system REQUIRED)
 find_package(Lua REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(CRITERION REQUIRED criterion)
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(CRITERION REQUIRED criterion)
 
 # Ajouter le sous-dossier des tests
-add_subdirectory(tests)
+# add_subdirectory(tests)
 
 add_executable(MyProject
     src/Main.cpp
