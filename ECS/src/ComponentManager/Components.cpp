@@ -194,7 +194,6 @@ namespace ECS::Components
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
                 ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
                     ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
-                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>(),
                     0.0,
                     0.0,
                     0.0,
@@ -220,7 +219,6 @@ namespace ECS::Components
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
                 ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
                     ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
-                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>(),
                     0.0,
                     0.0,
                     0.0,
@@ -242,7 +240,6 @@ namespace ECS::Components
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
                 ECS::GetInstance().getComponentsMapper()->AddComponent<Components::PositionsComponents, double, double, double, double, double>(
                     ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
-                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>(),
                     0.0,
                     0.0,
                     0.0,
@@ -260,6 +257,10 @@ namespace ECS::Components
                 sf::Vector2f(pos.x + size.x, pos.y + size.y),
                 sf::Vector2f(pos.x, pos.y + size.y)
             };
+            sf::Vector2f center(pos.x + size.x / 2, pos.y + size.y / 2);
+
+            PositionsComponents::applyScaleToArray(array, PositionsComponents.m_scales[lua_tonumber(L, 1)], center);
+            PositionsComponents::applyRotationToQuad(array, PositionsComponents.m_transforms[lua_tonumber(L, 1)], center);
             PositionsComponents.m_positions[lua_tonumber(L, 1)] = array;
         } catch (const ECS::ECSError &e) {
             std::cerr << e.what() << std::endl;
@@ -274,7 +275,6 @@ namespace ECS::Components
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(ECS::GetInstance().getEntity(entityId))) {
                 ECS::GetInstance().getComponentsMapper()->AddComponent<Components::PositionsComponents, double, double, double, double, double>(
                     ECS::GetInstance().getEntity(entityId),
-                    ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>(),
                     0.0,
                     0.0,
                     0.0,
@@ -296,25 +296,35 @@ namespace ECS::Components
         return 0;
     }
 
+    int ScriptComponents::getPosition(lua_State *L)
+    {
+        int entityID = luaL_checkinteger(L, 1);
+        Components::PositionsComponents &position = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+        glm::vec2 size = position.m_sizes[entityID];
+        auto& pos = position.m_positions[entityID][0];
+
+        lua_pushnumber(L, pos.x + size.x / 2);
+        lua_pushnumber(L, pos.y + size.y / 2);
+
+        return 2;
+    }
+
     void ColliderComponents::AddToEntity(Entity &entity, va_list args, ...)
     {
         static std::size_t id = 0;
 
         va_start(args, args);
         float top = va_arg(args, double);
-        float bottom = va_arg(args, double);
         float left = va_arg(args, double);
+        float bottom = va_arg(args, double);
         float right = va_arg(args, double);
+        char *name = va_arg(args, char *);
         va_end(args);
 
         m_colliders.emplace_back(entity, Hitbox{top, bottom, left, right});
         IdToIndex_p[entity.id] = m_colliders.size() - 1;
         entity.componentsName.insert(typeid(ColliderComponents).name());
-        std::string path = "collisionScript" + std::to_string(id) + ".lua";
-        std::ofstream file(path);
-        file << "function onCollision(entity1, entity2) end";
-        file.close();
-        m_index[entity.id] = id;
+        m_scripts[entity.id] = name;
         (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::COLLISION]->AddEntity(entity);
         id++;
     }

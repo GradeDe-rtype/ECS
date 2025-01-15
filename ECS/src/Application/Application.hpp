@@ -26,8 +26,13 @@ namespace App {
             sf::RenderWindow &getWindow();
         private:
             sf::RenderWindow p_window;
+            bool _hitterAlreadySpawn = false;
+            std::size_t _hitId;
         private:
+            void pollEvent();
             void initBackground();
             void initDuck();
+            void spawnHit(int x, int y);
+            void destroyHit();
     };
 } // namespace App

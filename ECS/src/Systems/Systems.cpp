@@ -77,6 +77,7 @@ namespace ECS {
     {
 		auto &positionComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
 		auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+		auto &colliderComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::ColliderComponents>();
         
         for (auto &entity : _entities) {
 			if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(entity)) {
@@ -87,6 +88,13 @@ namespace ECS {
 					position[i].x += vector.x * deltaTime;
 					position[i].y += vector.y * deltaTime;
 				}
+
+                if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::ColliderComponents>(entity)) {
+                    auto &collider = colliderComponent.m_colliders[colliderComponent.IdToIndex_p[entity.id]];
+
+                    collider.second.left = position[0].x;
+                    collider.second.top = position[0].y;
+                }
 			}
 		}
     }
@@ -141,9 +149,13 @@ namespace ECS {
 
         for (auto &[id1, entity] : colliderComponent.m_colliders) {
             for (auto &[id2, other] : colliderComponent.m_colliders) {
+                std::cout << id2.id << std::endl;
+                if (id1.id == id2.id)
+                    continue;
                 if (entity.top < other.bottom && entity.bottom > other.top && entity.left < other.right && entity.right > other.left) {
-                    std::string path = "collisionScript" + std::to_string(colliderComponent.m_index[id1.id]) + ".lua";
-                    luaL_loadfile(L, path.c_str());
+                    if (!colliderComponent.m_scripts[id2.id])
+                        continue;
+                    luaL_dofile(L, colliderComponent.m_scripts[id2.id]);
                     lua_getglobal(L, "onCollision");
                     lua_pushnumber(L, id1.id);
                     lua_pushnumber(L, id2.id);

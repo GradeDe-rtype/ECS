@@ -23,12 +23,12 @@ namespace ECS
             ~ComponentsManager() = default;
 
             template<class C, typename ...Args>
-            void AddComponent(Entity &entity, C &component, Args... args)
+            void AddComponent(Entity &entity, Args... args)
             {
                 assert(ECS::GetInstance().HasEntity(entity));
                 va_list argsList;
 
-                component.AddToEntity(entity, argsList, args...);
+                p_registeredComponents[typeid(C).name()]->AddToEntity(entity, argsList, args...);
             }
 
             template<class C>

@@ -135,6 +135,7 @@ namespace ECS
         lua_register(p_luaState, "rotate", Components::ScriptComponents::rotate);
         lua_register(p_luaState, "place", Components::ScriptComponents::place);
         lua_register(p_luaState, "setRotation", Components::ScriptComponents::setRotation);
+        lua_register(p_luaState, "getPosition", Components::ScriptComponents::getPosition);
         p_componentsMapper = std::make_shared<ComponentsManager>();
         p_systemsManager = std::make_shared<SystemsManager>();
     }

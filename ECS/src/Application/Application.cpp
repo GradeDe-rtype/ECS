@@ -38,12 +38,10 @@ namespace App {
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
             ECS::ECS::GetInstance().getEntity(bgId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::SpriteComponents>(),
             (char *)"assets/background.png"
         );
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double>(
             ECS::ECS::GetInstance().getEntity(bgId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::PositionsComponents>(),
             0.0,
             0.0,
             0.0,
@@ -60,13 +58,11 @@ namespace App {
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
             ECS::ECS::GetInstance().getEntity(duckId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::SpriteComponents>(),
             (char *)"assets/duck.png"
         );
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double, double, double>(
             ECS::ECS::GetInstance().getEntity(duckId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::PositionsComponents>(),
             -200.0,
             -270.0,
             0.0,
@@ -78,24 +74,80 @@ namespace App {
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::ScriptComponents>(
             ECS::ECS::GetInstance().getEntity(duckId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::ScriptComponents>(),
             (char *)"src/script.lua"
         );
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::ColliderComponents, double, double, double, double, char *> (
+            ECS::ECS::GetInstance().getEntity(duckId),
+            -200.0, //TODO @LO: this is moving
+            -270.0,
+            500.0 * 0.2,
+            500.0 * 0.2,
+            (char *)"src/script.lua"
+        );
+    }
+
+    void Application::spawnHit(int x, int y)
+    {
+        if (!_hitterAlreadySpawn) {
+            _hitId = ECS::ECS::GetInstance().AddEntity();
+            ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double, double, double> (
+                ECS::ECS::GetInstance().getEntity(_hitId),
+                static_cast<double>(y),
+                static_cast<double>(x),
+                0.0,
+                10.0,
+                10.0,
+                1.0,
+                1.0
+            );
+
+            ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::ColliderComponents, double, double, double, double, char *> (
+                ECS::ECS::GetInstance().getEntity(_hitId),
+                static_cast<double>(y),
+                static_cast<double>(x),
+                10.0,
+                10.0,
+                nullptr
+            );
+            std::cout << "Hitter spawned !" << std::endl;
+            _hitterAlreadySpawn = !_hitterAlreadySpawn;
+        }
+    }
+
+    void Application::pollEvent()
+    {
+        sf::Event event;
+
+        while (p_window.pollEvent(event)) {
+            auto pos = sf::Mouse::getPosition();
+
+            switch (event.type) {
+                case sf::Event::Closed:
+                    p_window.close();
+                    break;
+                case sf::Event::MouseButtonPressed:
+                    spawnHit(pos.x, pos.y);
+                    break;
+                case sf::Event::MouseButtonReleased:
+                    ECS::ECS::GetInstance().RemoveEntity(_hitId);
+                    _hitterAlreadySpawn = !_hitterAlreadySpawn;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     void Application::run()
     {
         sf::Clock p_clock;
-        sf::Event event;
         
         initBackground();
         initDuck();
         while (p_window.isOpen()) {
             p_window.clear();
-            while (p_window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
-                    p_window.close();
-            }
+            pollEvent();
 			float deltaTime = p_clock.restart().asSeconds();
             ECS::ECS::GetInstance().getSystemsManager()->Update(deltaTime);
             p_window.display();
