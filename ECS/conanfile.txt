@@ -6,3 +6,6 @@ boost/1.83.0
 [generators]
 CMakeToolchain
 CMakeDeps
+
+[conf]
+tools.system.package_manager:mode=install
