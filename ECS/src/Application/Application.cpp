@@ -76,13 +76,10 @@ namespace App {
             0.2
         );
 
-        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::TransformComponents, double, double, double, double>(
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::ScriptComponents>(
             ECS::ECS::GetInstance().getEntity(duckId),
-            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::TransformComponents>(),
-            0.0,
-            30.0,
-            0.0,
-            0.0
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::ScriptComponents>(),
+            (char *)"src/script.lua"
         );
     }
 

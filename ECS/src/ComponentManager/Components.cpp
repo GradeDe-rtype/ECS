@@ -163,7 +163,7 @@ namespace ECS::Components
         va_start(args, args);
         std::string path(va_arg(args, char *));
         lua_State *L = ECS::ECS::GetInstance().getLuaLState();
-        luaL_loadfile(L, path.c_str());
+        luaL_dofile(L, path.c_str());
         lua_getglobal(L, "Update");
 
         if (lua_isfunction(L, -1)) {
@@ -173,8 +173,8 @@ namespace ECS::Components
         } else {
             throw std::runtime_error("Failed to load script: " + path + " (Update function not found)");
         }
-        (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::SCRIPT]->AddEntity(entity);
         entity.componentsName.insert(typeid(ScriptComponents).name());
+        (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::SCRIPT]->AddEntity(entity);
     }
 
     void ScriptComponents::RemoveFromEntity(Entity &entity)
@@ -202,7 +202,12 @@ namespace ECS::Components
                 );
             }
             TransformComponents &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
-            transformComponent.m_positions[lua_tonumber(L, 1)] = glm::vec2(lua_tonumber(L, 2), lua_tonumber(L, 3));
+            glm::vec2 speed = transformComponent.m_positions[transformComponent.IdToIndex_p[lua_tonumber(L, 1)]];
+            if ((speed.x == 0 && speed.y == 0) && (lua_tonumber(L, 2) != 0 || lua_tonumber(L, 3) != 0))
+                (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::MOVEMENT]->AddEntity(ECS::GetInstance().getEntity(lua_tonumber(L, 1)));
+            else if ((speed.x != 0 || speed.y != 0) && (lua_tonumber(L, 2) == 0 && lua_tonumber(L, 3) == 0))
+                (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::MOVEMENT]->RemoveEntity(ECS::GetInstance().getEntity(lua_tonumber(L, 1)));
+            transformComponent.m_positions[transformComponent.IdToIndex_p[lua_tonumber(L, 1)]] = glm::vec2(lua_tonumber(L, 2), lua_tonumber(L, 3));
         } catch (const ECS::ECSError &e) {
             std::cerr << e.what() << std::endl;
         }

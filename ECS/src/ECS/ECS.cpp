@@ -129,6 +129,7 @@ namespace ECS
     {
         p_luaState = luaL_newstate();
         luaL_openlibs(p_luaState);
+        lua_checkstack(p_luaState, 100);
 
         lua_register(p_luaState, "move", Components::ScriptComponents::move);
         lua_register(p_luaState, "rotate", Components::ScriptComponents::rotate);
