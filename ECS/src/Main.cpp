@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     App::Application myApp{
         {
-            sf::Vector2u(1920, 1080),
+            sf::Vector2u(1280, 720),
             "Hunter",
             0,
             32

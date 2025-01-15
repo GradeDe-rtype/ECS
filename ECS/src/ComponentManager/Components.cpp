@@ -31,6 +31,16 @@ namespace ECS::Components
         }
     }
 
+    void PositionsComponents::applyScaleToArray(auto& array, glm::vec2& scale, sf::Vector2f& center) 
+    {
+        auto& pos = array[0];
+
+        for (auto &vertex: array) {
+            vertex.x = center.x + (vertex.x - center.x) * scale.x;
+            vertex.y = center.y + (vertex.y - center.y) * scale.y;
+        }
+    }
+
     void PositionsComponents::AddToEntity(Entity &entity, va_list args, ...)
     {
         va_start(args, args);
@@ -48,6 +58,11 @@ namespace ECS::Components
             sf::Vector2f(pos.x + m_sizes.back().x, pos.y + m_sizes.back().y),
             sf::Vector2f(pos.x, pos.y + m_sizes.back().y)
         };
+        m_scales.emplace_back(
+            va_arg(args, double),
+            va_arg(args, double)
+        );
+        applyScaleToArray(array, m_scales.back(), center);
         applyRotationToQuad(array, m_transforms.back(), center);
 
         m_positions.push_back(array);
@@ -118,7 +133,10 @@ namespace ECS::Components
 			(*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::ROTATION]->AddEntity(entity);
         glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
         m_transforms.emplace_back(glm::angleAxis(glm::radians(static_cast<float>(degree)), axis));
-        m_scales.emplace_back(va_arg(args, double));
+        m_scales.emplace_back(
+            va_arg(args, double),
+            va_arg(args, double)
+        );
 
         va_end(args);
         IdToIndex_p[entity.id] = m_positions.size() - 1;

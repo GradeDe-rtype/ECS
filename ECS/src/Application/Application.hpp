@@ -26,5 +26,8 @@ namespace App {
             sf::RenderWindow &getWindow();
         private:
             sf::RenderWindow p_window;
+        private:
+            void initBackground();
+            void initDuck();
     };
-}
+} // namespace App

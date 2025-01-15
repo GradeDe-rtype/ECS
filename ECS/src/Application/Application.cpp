@@ -32,10 +32,8 @@ namespace App {
             p_window.close();
     }
 
-    void Application::run()
+    void Application::initBackground() 
     {
-        sf::Clock p_clock;
-        sf::Event event;
         std::size_t bgId = ECS::ECS::GetInstance().AddEntity();
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
@@ -50,9 +48,51 @@ namespace App {
             0.0,
             0.0,
             1080.0,
-            1920.0
+            1920.0,
+            1.0,
+            1.0
+        );
+    }
+
+    void Application::initDuck()
+    {
+        std::size_t duckId = ECS::ECS::GetInstance().AddEntity();
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
+            ECS::ECS::GetInstance().getEntity(duckId),
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::SpriteComponents>(),
+            (char *)"assets/duck.png"
         );
 
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double, double, double>(
+            ECS::ECS::GetInstance().getEntity(duckId),
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::PositionsComponents>(),
+            -200.0,
+            -270.0,
+            0.0,
+            500.0,
+            500.0,
+            0.2,
+            0.2
+        );
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::TransformComponents, double, double, double, double>(
+            ECS::ECS::GetInstance().getEntity(duckId),
+            ECS::ECS::GetInstance().getComponentsMapper()->GetComponent<ECS::Components::TransformComponents>(),
+            0.0,
+            30.0,
+            0.0,
+            0.0
+        );
+    }
+
+    void Application::run()
+    {
+        sf::Clock p_clock;
+        sf::Event event;
+        
+        initBackground();
+        initDuck();
         while (p_window.isOpen()) {
             p_window.clear();
             while (p_window.pollEvent(event)) {

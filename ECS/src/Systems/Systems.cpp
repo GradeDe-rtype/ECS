@@ -16,9 +16,11 @@ namespace ECS {
     {
         _systems[(std::size_t)SystemType::POSITION] = nullptr;
 		_systems[(std::size_t)SystemType::MOVEMENT] = std::make_unique<MoveSystem>();
+		_systems[(std::size_t)SystemType::SCALE] = nullptr;
 		_systems[(std::size_t)SystemType::ROTATION] = std::make_unique<RotateSystem>();
         _systems[(std::size_t)SystemType::SPRITE] = std::make_unique<DrawSystem>();
         _systems[(std::size_t)SystemType::SCRIPT] = std::make_unique<ScriptSystem>();
+        _systems[(std::size_t)SystemType::COLLISION] = std::make_unique<CollisionSystem>();
     }
 
     void SystemsManager::Update(float deltaTime)
@@ -64,6 +66,11 @@ namespace ECS {
         }
         for (auto& [texture, index] : spriteComponent.m_texture)
             ECS::GetInstance().App->getWindow().draw(spriteComponent.m_vertexArray[index], &texture);
+    }
+
+    void ScaleSystem::Update(float deltaTime)
+    {
+        
     }
 
     void MoveSystem::Update(float deltaTime)

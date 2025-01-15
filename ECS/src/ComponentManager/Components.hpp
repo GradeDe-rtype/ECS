@@ -33,9 +33,11 @@ namespace ECS::Components
             static void applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center, float deltaTime = 1);
         public:
             std::vector<std::array<sf::Vector2f, 4>> m_positions;
-            std::vector<float> m_scales;
+            std::vector<glm::vec2> m_scales;
             std::vector<glm::quat> m_transforms;
             std::vector<glm::vec2> m_sizes;
+        private:
+            void applyScaleToArray(auto& array, glm::vec2& scale, sf::Vector2f& center);
     };
 
     class SpriteComponents final: public AComponent {
@@ -61,7 +63,7 @@ namespace ECS::Components
             void RemoveFromEntity(Entity &entity) override;
         public:
             std::vector<glm::vec2> m_positions;
-            std::vector<double> m_scales;
+            std::vector<glm::vec2> m_scales;
             std::vector<glm::quat> m_transforms;
     };
 
