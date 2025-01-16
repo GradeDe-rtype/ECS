@@ -142,6 +142,26 @@ namespace ECS {
         }
     }
 
+    bool CollisionSystem::_isColliding(const auto &a, const auto &b)
+    {
+        double r1MinX = std::min(a.left, a.left + a.width);
+        double r1MaxX = std::max(a.left, a.left + a.width);
+        double r1MinY = std::min(a.top, a.top + a.height);
+        double r1MaxY = std::max(a.top, a.top + a.height);
+
+        double r2MinX = std::min(b.left, b.left + b.width);
+        double r2MaxX = std::max(b.left, b.left + b.width);
+        double r2MinY = std::min(b.top, b.top + b.height);
+        double r2MaxY = std::max(b.top, b.top + b.height);
+
+        double interLeft   = std::max(r1MinX, r2MinX);
+        double interTop    = std::max(r1MinY, r2MinY);
+        double interRight  = std::min(r1MaxX, r2MaxX);
+        double interBottom = std::min(r1MaxY, r2MaxY);
+
+        return ((interLeft < interRight) && (interTop < interBottom));
+    }
+
     void CollisionSystem::Update(float deltaTime)
     {
         auto &colliderComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::ColliderComponents>();
@@ -149,22 +169,19 @@ namespace ECS {
 
         for (auto &[id1, entity] : colliderComponent.m_colliders) {
             for (auto &[id2, other] : colliderComponent.m_colliders) {
-                std::cout << id2.id << std::endl;
                 if (id1.id == id2.id)
-                    continue;
-                if (entity.top < other.bottom && entity.bottom > other.top && entity.left < other.right && entity.right > other.left) {
+                    break;
+                if (_isColliding(entity, other)) {
                     if (!colliderComponent.m_scripts[id2.id])
                         continue;
                     luaL_dofile(L, colliderComponent.m_scripts[id2.id]);
                     lua_getglobal(L, "onCollision");
-                    lua_pushnumber(L, id1.id);
-                    lua_pushnumber(L, id2.id);
-                    if (!lua_pcall(L, 2, 0, 0)) {
+                    lua_pushinteger(L, id1.id);
+                    lua_pushinteger(L, id2.id);
+                    if (lua_pcall(L, 2, 0, 0) != 0) {
                         std::cerr << "Error calling Update function: " << lua_tostring(L, -1) << std::endl;
                         lua_pop(L, 1);
                     }
-                    lua_pop(L, 1);
-                    lua_pop(L, 1);
                     break;
                 }
             }

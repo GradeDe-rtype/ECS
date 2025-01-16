@@ -90,9 +90,9 @@ namespace ECS::Components
         public:
             struct Hitbox {
                 float top;
-                float bottom;
+                float height;
                 float left;
-                float right;
+                float width;
             };
 
             ColliderComponents() = default;

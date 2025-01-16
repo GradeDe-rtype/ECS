@@ -84,6 +84,8 @@ namespace ECS {
             CollisionSystem() = default;
             ~CollisionSystem() final = default;
             void Update(float deltaTime) final;
+        private:
+            bool _isColliding(const auto &h1, const auto &h2);
     };
 } // ECS
 

@@ -63,8 +63,8 @@ namespace App {
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double, double, double>(
             ECS::ECS::GetInstance().getEntity(duckId),
-            -200.0,
-            -270.0,
+            0.0,
+            0.0,
             0.0,
             500.0,
             500.0,
@@ -79,8 +79,8 @@ namespace App {
 
         ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::ColliderComponents, double, double, double, double, char *> (
             ECS::ECS::GetInstance().getEntity(duckId),
-            -200.0, //TODO @LO: this is moving
-            -270.0,
+            0.0,
+            0.0,
             500.0 * 0.2,
             500.0 * 0.2,
             (char *)"src/script.lua"
@@ -110,7 +110,6 @@ namespace App {
                 10.0,
                 nullptr
             );
-            std::cout << "Hitter spawned !" << std::endl;
             _hitterAlreadySpawn = !_hitterAlreadySpawn;
         }
     }
@@ -120,14 +119,12 @@ namespace App {
         sf::Event event;
 
         while (p_window.pollEvent(event)) {
-            auto pos = sf::Mouse::getPosition();
-
             switch (event.type) {
                 case sf::Event::Closed:
                     p_window.close();
                     break;
                 case sf::Event::MouseButtonPressed:
-                    spawnHit(pos.x, pos.y);
+                    spawnHit(event.mouseButton.x, event.mouseButton.y);
                     break;
                 case sf::Event::MouseButtonReleased:
                     ECS::ECS::GetInstance().RemoveEntity(_hitId);
