@@ -7,7 +7,6 @@
 
 #include "Application/Application.hpp"
 #include "ECS/ECS.hpp"
-#include "ComponentManager/Components.hpp"
 #include "ComponentManager/ComponentManager.hpp"
 
 int main(int argc, char *argv[])

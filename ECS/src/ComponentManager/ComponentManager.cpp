@@ -6,7 +6,12 @@
 */
 
 #include "ComponentManager.hpp"
-#include "Components.hpp"
+#include "Components/TransformComponents/TransformComponents.hpp"
+#include "Components/TextComponents/TextComponents.hpp"
+#include "Components/ColliderComponents/ColliderComponents.hpp"
+#include "Components/ScriptComponents/ScriptComponents.hpp"
+#include "Components/PositionsComponents/PositionsComponents.hpp"
+#include "Components/SpriteComponents/SpriteComponents.hpp"
 
 namespace ECS
 {

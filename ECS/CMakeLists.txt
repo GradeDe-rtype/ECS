@@ -7,7 +7,7 @@ project(MyProject)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
 
 # if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -26,12 +26,16 @@ find_package(Lua REQUIRED)
 # Ajouter le sous-dossier des tests
 # add_subdirectory(tests)
 
+file(GLOB_RECURSE COMPONENTS_SOURCES
+    "src/Components/*/*.cpp"
+)
+
 add_executable(MyProject
+    ${COMPONENTS_SOURCES}
     src/Main.cpp
     src/Application/Application.cpp
     src/ECS/ECS.cpp
     src/ComponentManager/ComponentManager.cpp
-    src/ComponentManager/Components.cpp
     src/Systems/Systems.cpp
     src/Systems/Systems.hpp
     include/Interface/ISystems.hpp
