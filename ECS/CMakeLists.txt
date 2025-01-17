@@ -45,6 +45,8 @@ add_executable(MyProject
 
 target_include_directories(MyProject PUBLIC include/Interface)
 target_include_directories(MyProject PUBLIC include/Abstract)
+target_include_directories(MyProject PRIVATE src/Components)
+
 target_include_directories(MyProject PRIVATE ${LUA_INCLUDE_DIR})
 target_link_libraries(MyProject PRIVATE ${LUA_LIBRARIES})
 target_include_directories(MyProject PRIVATE src)

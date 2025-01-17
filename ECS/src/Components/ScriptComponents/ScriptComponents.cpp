@@ -7,9 +7,9 @@
 
 #include "ScriptComponents.hpp"
 #include "ECS/ECS.hpp"
-#include "../../ComponentManager/ComponentManager.hpp"
-#include "../PositionsComponents/PositionsComponents.hpp"
-#include "../TransformComponents/TransformComponents.hpp"
+#include "ComponentManager/ComponentManager.hpp"
+#include "PositionsComponents/PositionsComponents.hpp"
+#include "TransformComponents/TransformComponents.hpp"
 
 namespace ECS::Components
 {
