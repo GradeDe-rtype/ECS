@@ -21,6 +21,7 @@ namespace ECS {
         _systems[(std::size_t)SystemType::SPRITE] = std::make_unique<DrawSystem>();
         _systems[(std::size_t)SystemType::SCRIPT] = std::make_unique<ScriptSystem>();
         _systems[(std::size_t)SystemType::COLLISION] = std::make_unique<CollisionSystem>();
+        _systems[(std::size_t)SystemType::TEXT] = std::make_unique<TextSystem>();
     }
 
     void SystemsManager::Update(float deltaTime)
@@ -66,6 +67,22 @@ namespace ECS {
         }
         for (auto& [texture, index] : spriteComponent.m_texture)
             ECS::GetInstance().App->getWindow().draw(spriteComponent.m_vertexArray[index], &texture);
+    }
+
+    void TextSystem::Update(float deltaTime)
+    {
+        auto &textComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TextComponents>();
+        auto &positionComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
+
+        for (auto &entity : _entities) {
+            if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(entity)) {
+                auto &position = positionComponent.m_positions[positionComponent.IdToIndex_p[entity.id]];
+                auto &text = textComponent.m_texts[textComponent.IdToIndex_p[entity.id]];
+
+                text.setPosition(position[0].x, position[0].y);
+                ECS::GetInstance().App->getWindow().draw(text);
+            }
+        }
     }
 
     void MoveSystem::Update(float deltaTime)

@@ -11,7 +11,7 @@
 #include <memory>
 #include <unordered_map>
 #include <cassert>
-
+#include <iostream>
 #include "ECS/ECS.hpp"
 #include "AComponent.hpp"
 

@@ -9,9 +9,10 @@
 
 #include <cstdarg>
 #include <vector>
+#include <optional>
+#include <typeinfo>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
-#include <typeinfo>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <glm/gtc/constants.hpp>
@@ -100,5 +101,19 @@ namespace ECS::Components
         public:
             std::vector<std::pair<Entity, Hitbox>> m_colliders;
             std::unordered_map<std::size_t, char *> m_scripts;
+    };
+
+    class TextComponents final: public AComponent {
+        public:
+            TextComponents() = default;
+            ~TextComponents() override = default;
+
+            void AddToEntity(Entity &entity, va_list args, ...) override;
+            void RemoveFromEntity(Entity &entity) override;
+        public:
+            std::vector<sf::Text> m_texts;
+        private:
+            std::vector<std::optional<std::string>> p_fontsNames;
+            std::unordered_map<std::string, std::pair<sf::Font, std::size_t>> p_alreadyLoaded;
     };
 } // namespace ECS::Components

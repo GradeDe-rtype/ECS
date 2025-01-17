@@ -31,6 +31,11 @@ namespace ECS
                     std::string p_msg;
             };
 
+            enum class RunningState {
+                RELEASE,
+                DEBUG
+            };
+
             ECS(const ECS &) = delete;
             ECS &operator = (const ECS &) = delete;
 
@@ -45,8 +50,8 @@ namespace ECS
             [[nodiscard]] std::shared_ptr<ComponentsManager> getComponentsMapper();
             [[nodiscard]] std::shared_ptr<SystemsManager> getSystemsManager();
             [[nodiscard]] lua_State *getLuaLState();
+            [[nodiscard]] sf::Font &getBasicFont();
             [[maybe_unused]] void RemoveEntity(const Entity &entity);
-
             [[maybe_unused]] void PrintEntities() const; // * Use for debug
         public:
             std::unique_ptr<App::Application> App;
@@ -54,6 +59,7 @@ namespace ECS
             ECS();
             ~ECS();
         private:
+            sf::Font p_basicFont;
             std::vector<Entity> p_entities;
             std::shared_ptr<SystemsManager> p_systemsManager;
             std::shared_ptr<ComponentsManager> p_componentsMapper;

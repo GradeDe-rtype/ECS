@@ -125,6 +125,11 @@ namespace ECS
         return p_luaState;
     }
 
+    sf::Font &ECS::getBasicFont()
+    {
+        return p_basicFont;
+    }
+
     ECS::ECS()
     {
         p_luaState = luaL_newstate();
@@ -138,6 +143,7 @@ namespace ECS
         lua_register(p_luaState, "getPosition", Components::ScriptComponents::getPosition);
         p_componentsMapper = std::make_shared<ComponentsManager>();
         p_systemsManager = std::make_shared<SystemsManager>();
+        p_basicFont.loadFromFile("assets/coucou.ttf");
     }
 
     ECS::~ECS()
