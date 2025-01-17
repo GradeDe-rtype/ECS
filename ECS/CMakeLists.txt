@@ -30,7 +30,6 @@ add_executable(MyProject
     src/Main.cpp
     src/Application/Application.cpp
     src/ECS/ECS.cpp
-    src/Scene/Scene.cpp
     src/ComponentManager/ComponentManager.cpp
     src/ComponentManager/Components.cpp
     src/Systems/Systems.cpp

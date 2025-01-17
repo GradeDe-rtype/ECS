@@ -32,7 +32,7 @@ namespace ECS::Components
             void RemoveFromEntity(Entity &entity) override;
             
             static void applyRotationToQuad(auto& array, const glm::quat& rotation, const sf::Vector2f& center, float deltaTime = 1);
-            static void applyScaleToArray(auto& array, glm::vec2& scale, sf::Vector2f& center);
+            static void applyScaleToArray(auto& array, glm::vec2& scale);
         public:
             std::vector<std::array<sf::Vector2f, 4>> m_positions;
             std::vector<glm::vec2> m_scales;
@@ -63,7 +63,6 @@ namespace ECS::Components
             void RemoveFromEntity(Entity &entity) override;
         public:
             std::vector<glm::vec2> m_positions;
-            std::vector<glm::vec2> m_scales;
             std::vector<glm::quat> m_transforms;
     };
 
@@ -79,8 +78,6 @@ namespace ECS::Components
             static int rotate(lua_State *L);
             static int setRotation(lua_State *L);
             static int place(lua_State *L);
-            //TODO @LO: int scale(lua_State *L);
-            //TODO @LO: int setSize(lua_State *L);
             static int getPosition(lua_State *L);
         public:
             std::vector<int> m_scripts;

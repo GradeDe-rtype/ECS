@@ -9,7 +9,6 @@
 #include "ECS/Entity.h"
 #include "ECS/ECS.hpp"
 #include "ComponentManager.hpp"
-#include <fstream>
 
 namespace ECS::Components
 {
@@ -31,10 +30,8 @@ namespace ECS::Components
         }
     }
 
-    void PositionsComponents::applyScaleToArray(auto& array, glm::vec2& scale, sf::Vector2f& center) 
+    void PositionsComponents::applyScaleToArray(auto& array, glm::vec2& scale) 
     {
-        auto& pos = array[0];
-
         for (auto &vertex: array) {
             vertex.x *= scale.x;
             vertex.y *= scale.y;
@@ -62,7 +59,7 @@ namespace ECS::Components
             sf::Vector2f(pos.x + m_sizes.back().x, pos.y + m_sizes.back().y),
             sf::Vector2f(pos.x, pos.y + m_sizes.back().y)
         };
-        applyScaleToArray(array, m_scales.back(), center);
+        applyScaleToArray(array, m_scales.back());
         applyRotationToQuad(array, m_transforms.back(), center);
 
         m_positions.push_back(array);
@@ -133,10 +130,6 @@ namespace ECS::Components
 			(*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::ROTATION]->AddEntity(entity);
         glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
         m_transforms.emplace_back(glm::angleAxis(glm::radians(static_cast<float>(degree)), axis));
-        m_scales.emplace_back(
-            va_arg(args, double),
-            va_arg(args, double)
-        );
 
         va_end(args);
         IdToIndex_p[entity.id] = m_positions.size() - 1;
@@ -149,10 +142,8 @@ namespace ECS::Components
         std::size_t index = IdToIndex_p[entity.id];
 
         std::swap(m_positions[index], m_positions.back());
-        std::swap(m_scales[index], m_scales.back());
         std::swap(m_transforms[index], m_transforms.back());
         m_positions.pop_back();
-        m_scales.pop_back();
         m_transforms.pop_back();
         entity.componentsName.erase(typeid(TransformComponents).name());
         IdToIndex_p.erase(index);
@@ -192,9 +183,8 @@ namespace ECS::Components
     {
         try {
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
-                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double>(
                     ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
-                    0.0,
                     0.0,
                     0.0,
                     0.0
@@ -217,17 +207,21 @@ namespace ECS::Components
     {
         try {
             if (!ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(ECS::GetInstance().getEntity(lua_tonumber(L, 1)))) {
-                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double, double>(
+                ECS::GetInstance().getComponentsMapper()->AddComponent<Components::TransformComponents, double, double, double>(
                     ECS::GetInstance().getEntity(lua_tonumber(L, 1)),
-                    0.0,
                     0.0,
                     0.0,
                     0.0
                 );
             }
             TransformComponents &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+            double angle = glm::angle(transformComponent.m_transforms[transformComponent.IdToIndex_p[lua_tonumber(L, 1)]]);
+            if (lua_tonumber(L, 2) != 0 && angle == 0)
+                (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::ROTATION]->AddEntity(ECS::GetInstance().getEntity(lua_tonumber(L, 1)));
+            else if (angle != 0 && lua_tonumber(L, 2) == 0)
+                (*ECS::ECS::GetInstance().getSystemsManager())[SystemsManager::SystemType::ROTATION]->RemoveEntity(ECS::GetInstance().getEntity(lua_tonumber(L, 1)));
             const glm::vec3 axis = glm::vec3(0.0f, 0.0f, 1.0f);
-            transformComponent.m_transforms[lua_tonumber(L, 1)] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
+            transformComponent.m_transforms[transformComponent.IdToIndex_p[lua_tonumber(L, 1)]] = glm::angleAxis(glm::radians(static_cast<float>(lua_tonumber(L, 2))), axis);
         } catch (const ECS::ECSError &e) {
             std::cerr << e.what() << std::endl;
         }
@@ -259,7 +253,7 @@ namespace ECS::Components
             };
             sf::Vector2f center(pos.x + size.x / 2, pos.y + size.y / 2);
 
-            PositionsComponents::applyScaleToArray(array, PositionsComponents.m_scales[lua_tonumber(L, 1)], center);
+            PositionsComponents::applyScaleToArray(array, PositionsComponents.m_scales[lua_tonumber(L, 1)]);
             PositionsComponents::applyRotationToQuad(array, PositionsComponents.m_transforms[lua_tonumber(L, 1)], center);
             PositionsComponents.m_positions[lua_tonumber(L, 1)] = array;
         } catch (const ECS::ECSError &e) {

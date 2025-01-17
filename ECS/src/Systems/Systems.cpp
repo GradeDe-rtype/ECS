@@ -68,11 +68,6 @@ namespace ECS {
             ECS::GetInstance().App->getWindow().draw(spriteComponent.m_vertexArray[index], &texture);
     }
 
-    void ScaleSystem::Update(float deltaTime)
-    {
-        
-    }
-
     void MoveSystem::Update(float deltaTime)
     {
 		auto &positionComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
@@ -174,7 +169,7 @@ namespace ECS {
                 if (_isColliding(entity, other)) {
                     if (!colliderComponent.m_scripts[id2.id])
                         continue;
-                    luaL_dofile(L, colliderComponent.m_scripts[id2.id]);
+                    luaL_loadfile(L, colliderComponent.m_scripts[id2.id]);
                     lua_getglobal(L, "onCollision");
                     lua_pushinteger(L, id1.id);
                     lua_pushinteger(L, id2.id);

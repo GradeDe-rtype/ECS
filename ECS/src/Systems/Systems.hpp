@@ -65,13 +65,6 @@ namespace ECS {
 	    	void Update(float deltaTime) final;
 	};
 
-    class ScaleSystem final : public ASystems {
-        public:
-            ScaleSystem() = default;
-            ~ScaleSystem() final = default;
-            void Update(float deltaTime) final;
-    };
-
     class ScriptSystem final : public ASystems {
         public:
             ScriptSystem() = default;

@@ -49,7 +49,7 @@ namespace ECS
 
             [[maybe_unused]] void PrintEntities() const; // * Use for debug
         public:
-            App::Application *App = nullptr;
+            std::unique_ptr<App::Application> App;
         private:
             ECS();
             ~ECS();

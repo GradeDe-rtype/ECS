@@ -33,6 +33,5 @@ namespace App {
             void initBackground();
             void initDuck();
             void spawnHit(int x, int y);
-            void destroyHit();
     };
 } // namespace App
