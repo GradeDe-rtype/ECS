@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    ECS::ECS::Init();
+    ECS::ECS::Init(ECS::ECS::RunningState::DEBUG);
 
     ECS::ECS::GetInstance().App = std::make_unique<App::Application>(App::Application::AppSettings
         {

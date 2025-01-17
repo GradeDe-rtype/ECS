@@ -24,11 +24,13 @@ namespace ECS
 
     static ECS *s_Instance = nullptr;
 
-    void ECS::Init()
+    void ECS::Init(RunningState state)
     {
         assert(!s_Instance);
 
-        s_Instance = new ECS();
+        s_Instance = new ECS(state);
+        if (s_Instance->runningState == RunningState::DEBUG)
+            s_Instance->initFpsText();
     }
 
     void ECS::Shutdown()
@@ -44,6 +46,27 @@ namespace ECS
         assert(s_Instance);
 
         return *s_Instance;
+    }
+
+    void ECS::initFpsText()
+    {
+        p_fpsTextId = ECS::ECS::GetInstance().AddEntity();
+        p_componentsMapper->AddComponent<Components::PositionsComponents, double, double, double, double, double, double, double>(
+            ECS::ECS::GetInstance().getEntity(p_fpsTextId),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        );
+        p_componentsMapper->AddComponent<Components::TextComponents, char *, char *>(
+            ECS::ECS::GetInstance().getEntity(p_fpsTextId),
+            (char *)"FPS: ",
+            (char *)"assets/coucou.ttf",
+            13
+        );
     }
 
     std::size_t ECS::AddEntity()
@@ -130,7 +153,12 @@ namespace ECS
         return p_basicFont;
     }
 
-    ECS::ECS()
+    std::size_t ECS::getFpsTextId()
+    {
+        return p_fpsTextId;
+    }
+
+    ECS::ECS(RunningState state) : runningState(state)
     {
         p_luaState = luaL_newstate();
         luaL_openlibs(p_luaState);

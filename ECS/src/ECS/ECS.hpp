@@ -39,7 +39,7 @@ namespace ECS
             ECS(const ECS &) = delete;
             ECS &operator = (const ECS &) = delete;
 
-            static void Init();
+            static void Init(RunningState state = RunningState::RELEASE);
             static void Shutdown();
             static ECS &GetInstance();
 
@@ -51,14 +51,19 @@ namespace ECS
             [[nodiscard]] std::shared_ptr<SystemsManager> getSystemsManager();
             [[nodiscard]] lua_State *getLuaLState();
             [[nodiscard]] sf::Font &getBasicFont();
+            [[nodiscard]] std::size_t getFpsTextId();
             [[maybe_unused]] void RemoveEntity(const Entity &entity);
             [[maybe_unused]] void PrintEntities() const; // * Use for debug
         public:
             std::unique_ptr<App::Application> App;
+            const RunningState runningState;
         private:
-            ECS();
+            ECS(RunningState state);
             ~ECS();
+
+            void initFpsText();
         private:
+            std::size_t p_fpsTextId;
             sf::Font p_basicFont;
             std::vector<Entity> p_entities;
             std::shared_ptr<SystemsManager> p_systemsManager;

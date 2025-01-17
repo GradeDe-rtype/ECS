@@ -73,7 +73,11 @@ namespace ECS {
     {
         auto &textComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TextComponents>();
         auto &positionComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::PositionsComponents>();
-
+        
+        if (ECS::GetInstance().runningState == ECS::RunningState::DEBUG) {
+            auto &fpsText = textComponent.m_texts[textComponent.IdToIndex_p[ECS::GetInstance().getFpsTextId()]];
+            fpsText.setString("FPS: " + std::to_string(static_cast<int>(1.0f / deltaTime)));
+        }
         for (auto &entity : _entities) {
             if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::PositionsComponents>(entity)) {
                 auto &position = positionComponent.m_positions[positionComponent.IdToIndex_p[entity.id]];
