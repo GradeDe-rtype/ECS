@@ -11,7 +11,9 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <functional>
 #include <lua.hpp>
+#include <optional>
 
 #include "ECS/Entity.h"
 #include "Application/Application.hpp"
@@ -52,6 +54,9 @@ namespace ECS
             [[nodiscard]] lua_State *getLuaLState();
             [[nodiscard]] sf::Font &getBasicFont();
             [[nodiscard]] std::size_t getFpsTextId();
+            [[nodiscard]] std::optional<std::function<void(sf::Event &)>> getEventCallBacks(sf::Event::EventType eventType);
+            void AddEventCallBack(std::function<void(sf::Event &)> callback, sf::Event::EventType eventType);
+
             [[maybe_unused]] void RemoveEntity(const Entity &entity);
             [[maybe_unused]] void PrintEntities() const; // * Use for debug
         public:
@@ -65,6 +70,7 @@ namespace ECS
         private:
             std::size_t p_fpsTextId;
             sf::Font p_basicFont;
+            std::unordered_map<sf::Event::EventType, std::function<void(sf::Event &)>> p_eventCallBacks;
             std::vector<Entity> p_entities;
             std::shared_ptr<SystemsManager> p_systemsManager;
             std::shared_ptr<ComponentsManager> p_componentsMapper;

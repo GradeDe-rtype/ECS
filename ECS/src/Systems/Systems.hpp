@@ -34,6 +34,7 @@ namespace ECS {
                 COLLISION,
                 TEXT,
                 AUDIO,
+                EVENT,
                 COUNT
             };
             SystemsManager();
@@ -52,6 +53,13 @@ namespace ECS {
             ~DrawSystem() final = default;
             void Update(float deltaTime) final;
     };  
+
+    class EventSystem final : public ASystems {
+        public:
+            EventSystem() = default;
+            ~EventSystem() final = default;
+            void Update(float deltaTime) final;
+    };
 
 	class MoveSystem final : public ASystems {
 	    public:

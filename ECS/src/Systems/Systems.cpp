@@ -23,6 +23,7 @@ namespace ECS {
         _systems[(std::size_t)SystemType::COLLISION] = std::make_unique<CollisionSystem>();
         _systems[(std::size_t)SystemType::TEXT] = std::make_unique<TextSystem>();
         _systems[(std::size_t)SystemType::AUDIO] = std::make_unique<AudioSystem>();
+        _systems[(std::size_t)SystemType::EVENT] = std::make_unique<EventSystem>();
     }
 
     void SystemsManager::Update(float deltaTime)
@@ -66,6 +67,8 @@ namespace ECS {
                 oldValues[vertexArrayIndex]++;
             }
         }
+
+        ECS::GetInstance().App->getWindow().clear();
         for (auto& [texture, index] : spriteComponent.m_texture)
             ECS::GetInstance().App->getWindow().draw(spriteComponent.m_vertexArray[index], &texture);
     }
@@ -88,6 +91,7 @@ namespace ECS {
                 ECS::GetInstance().App->getWindow().draw(text);
             }
         }
+        ECS::GetInstance().App->getWindow().display();
     }
 
     void MoveSystem::Update(float deltaTime)
@@ -214,6 +218,18 @@ namespace ECS {
             if (audio.getStatus() != sf::Sound::Status::Playing)
                 audio.play();
             RemoveEntity(entity);
+        }
+    }
+
+    void EventSystem::Update(float deltaTime)
+    {
+        sf::Event event;
+
+        while (ECS::ECS::GetInstance().App->getWindow().pollEvent(event)) {
+            auto callback = ECS::ECS::GetInstance().getEventCallBacks(event.type);
+    
+            if (callback)
+                callback.value()(event);
         }
     }
 } // ECS

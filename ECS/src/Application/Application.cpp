@@ -121,40 +121,27 @@ namespace App {
         }
     }
 
-    void Application::pollEvent()
-    {
-        sf::Event event;
-
-        while (p_window.pollEvent(event)) {
-            switch (event.type) {
-                case sf::Event::Closed:
-                    p_window.close();
-                    break;
-                case sf::Event::MouseButtonPressed:
-                    spawnHit(event.mouseButton.x, event.mouseButton.y);
-                    break;
-                case sf::Event::MouseButtonReleased:
-                    ECS::ECS::GetInstance().RemoveEntity(_hitId);
-                    _hitterAlreadySpawn = !_hitterAlreadySpawn;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     void Application::run()
     {
         sf::Clock p_clock;
         
         initBackground();
         initDuck();
+        
+        ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
+            spawnHit(event.mouseButton.x, event.mouseButton.y);
+        }, sf::Event::MouseButtonPressed);
+        ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
+            ECS::ECS::GetInstance().RemoveEntity(_hitId);
+            _hitterAlreadySpawn = !_hitterAlreadySpawn;
+        }, sf::Event::MouseButtonReleased);
+        ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
+            p_window.close();
+        }, sf::Event::Closed);
+
         while (p_window.isOpen()) {
-            p_window.clear();
-            pollEvent();
 			float deltaTime = p_clock.restart().asSeconds();
             ECS::ECS::GetInstance().getSystemsManager()->Update(deltaTime);
-            p_window.display();
         }
     }
 

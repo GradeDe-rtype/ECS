@@ -125,6 +125,18 @@ namespace ECS
             std::cout << entity.id << std::endl;
     }
 
+    void ECS::AddEventCallBack(std::function<void(sf::Event &)> callback, sf::Event::EventType eventType)
+    {
+        p_eventCallBacks[eventType] = callback;
+    }
+
+    std::optional<std::function<void(sf::Event &)>> ECS::getEventCallBacks(sf::Event::EventType eventType)
+    {
+        if (p_eventCallBacks.contains(eventType))
+            return p_eventCallBacks[eventType];
+        return std::nullopt;
+    }
+
     Entity &ECS::getEntity(std::size_t id)
     {
         for (auto &entity : p_entities) {
