@@ -18,6 +18,7 @@ namespace ECS
 		RegisterComponent<Components::ScriptComponents>();
 		RegisterComponent<Components::ColliderComponents>();
         RegisterComponent<Components::TextComponents>();
+        RegisterComponent<Components::AudioComponents>();
     }
 
     void ComponentsManager::RemoveAllComponents(Entity& entity)

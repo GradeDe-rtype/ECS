@@ -33,6 +33,7 @@ namespace ECS {
                 SCRIPT,
                 COLLISION,
                 TEXT,
+                AUDIO,
                 COUNT
             };
             SystemsManager();
@@ -65,6 +66,15 @@ namespace ECS {
 	    	~RotateSystem() final = default;
 	    	void Update(float deltaTime) final;
 	};
+
+    class AudioSystem final : public ASystems {
+        public:
+            AudioSystem() = default;
+            ~AudioSystem() final = default;
+        
+            void Update(float deltaTime) final;
+
+    };
 
     class TextSystem final : public ASystems {
         public:

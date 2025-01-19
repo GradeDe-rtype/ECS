@@ -7,13 +7,9 @@
 
 #include "Application.hpp"
 #include "ECS/ECS.hpp"
-#include "Components/TransformComponents/TransformComponents.hpp"
-#include "Components/TextComponents/TextComponents.hpp"
-#include "Components/ColliderComponents/ColliderComponents.hpp"
-#include "Components/ScriptComponents/ScriptComponents.hpp"
-#include "Components/PositionsComponents/PositionsComponents.hpp"
-#include "Components/SpriteComponents/SpriteComponents.hpp"
+#include "Components.h"
 #include "ComponentManager/ComponentManager.hpp"
+#include "Systems/Systems.hpp"
 
 namespace App {
     [[maybe_unused]] Application::Application(const AppSettings& settings)
@@ -115,6 +111,12 @@ namespace App {
                 10.0,
                 nullptr
             );
+
+            ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::AudioComponents, char *>(
+                ECS::ECS::GetInstance().getEntity(_hitId),
+                (char *)"assets/shoot.ogg"
+            );
+            (*ECS::ECS::GetInstance().getSystemsManager())[ECS::SystemsManager::SystemType::AUDIO]->AddEntity(ECS::ECS::GetInstance().getEntity(_hitId));
             _hitterAlreadySpawn = !_hitterAlreadySpawn;
         }
     }

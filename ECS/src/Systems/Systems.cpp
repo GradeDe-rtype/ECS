@@ -22,6 +22,7 @@ namespace ECS {
         _systems[(std::size_t)SystemType::SCRIPT] = std::make_unique<ScriptSystem>();
         _systems[(std::size_t)SystemType::COLLISION] = std::make_unique<CollisionSystem>();
         _systems[(std::size_t)SystemType::TEXT] = std::make_unique<TextSystem>();
+        _systems[(std::size_t)SystemType::AUDIO] = std::make_unique<AudioSystem>();
     }
 
     void SystemsManager::Update(float deltaTime)
@@ -201,6 +202,18 @@ namespace ECS {
                     break;
                 }
             }
+        }
+    }
+
+    void AudioSystem::Update(float deltaTime)
+    {
+        auto &audioComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::AudioComponents>();
+
+        for (auto &entity : _entities) {
+            auto &audio = audioComponent.m_audio[audioComponent.IdToIndex_p[entity.id]];
+            if (audio.getStatus() != sf::Sound::Status::Playing)
+                audio.play();
+            RemoveEntity(entity);
         }
     }
 } // ECS

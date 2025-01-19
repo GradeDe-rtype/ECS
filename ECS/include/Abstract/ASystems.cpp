@@ -21,8 +21,7 @@ namespace ECS {
         });
 
         if (it != _entities.end()) {
-            std::swap(_entities[entity.id], _entities.back());
-            _entities.pop_back();
+            _entities.erase(it);
         } else {
             throw std::runtime_error("Entity not found");
         }

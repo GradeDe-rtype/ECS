@@ -13,3 +13,4 @@
 #include "Components/ScriptComponents/ScriptComponents.hpp"
 #include "Components/PositionsComponents/PositionsComponents.hpp"
 #include "Components/SpriteComponents/SpriteComponents.hpp"
+#include "Components/AudioComponents/AudioComponents.hpp"
