@@ -28,6 +28,14 @@ add_executable(MyProject
     include/Abstract/ASystems.cpp
 )
 
+if(MSVC)
+    # Ajout d'options spécifiques à Visual Studio
+    target_compile_options(r-type_server PRIVATE /W4) # Niveau d'avertissements élevé pour MSVC
+else()
+    # Ajout d'options pour GCC ou Clang
+    target_compile_options(r-type_server PRIVATE)
+endif()
+
 target_include_directories(MyProject PUBLIC include/Interface)
 target_include_directories(MyProject PUBLIC include/Abstract)
 target_include_directories(MyProject PRIVATE src/Components)
