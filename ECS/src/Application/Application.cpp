@@ -121,13 +121,42 @@ namespace App {
         }
     }
 
-    void Application::run()
+    void Application::launchSnook(sf::Event &event)
     {
-        sf::Clock p_clock;
-        
-        initBackground();
-        initDuck();
-        
+        if (event.key.code != sf::Keyboard::Space)
+                return;
+        std::size_t snookId = ECS::ECS::GetInstance().AddEntity();
+            
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::SpriteComponents, char *>(
+        ECS::ECS::GetInstance().getEntity(snookId),
+            (char *)"assets/snook.jpg"
+        );
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::PositionsComponents, double, double, double, double, double, double, double>(
+        ECS::ECS::GetInstance().getEntity(snookId),
+            2500.0,
+            0.0,
+            0.0,
+            880.0,
+            584.0,
+            0.2,
+            0.2
+        );
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::TransformComponents, double, double, double>(
+            ECS::ECS::GetInstance().getEntity(snookId),
+            -200.0,
+            100.0,
+            12.0
+        );
+
+        ECS::ECS::GetInstance().getComponentsMapper()->AddComponent<ECS::Components::GravityComponents, double>(
+            ECS::ECS::GetInstance().getEntity(snookId),
+            36.0
+        );
+    }
+
+    void Application::initHandledEvents()
+    {
         ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
             spawnHit(event.mouseButton.x, event.mouseButton.y);
         }, sf::Event::MouseButtonPressed);
@@ -138,10 +167,19 @@ namespace App {
         ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
             p_window.close();
         }, sf::Event::Closed);
+        ECS::ECS::GetInstance().AddEventCallBack([&](sf::Event &event) {
+            launchSnook(event);
+        }, sf::Event::KeyPressed);
+    }
+
+    void Application::run()
+    {
+        initBackground();
+        initDuck();
+        initHandledEvents();
 
         while (p_window.isOpen()) {
-			float deltaTime = p_clock.restart().asSeconds();
-            ECS::ECS::GetInstance().getSystemsManager()->Update(deltaTime);
+            ECS::ECS::GetInstance().getSystemsManager()->Update();
         }
     }
 

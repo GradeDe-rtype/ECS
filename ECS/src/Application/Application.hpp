@@ -29,8 +29,10 @@ namespace App {
             bool _hitterAlreadySpawn = false;
             std::size_t _hitId;
         private:
+            void initHandledEvents();
             void initBackground();
             void initDuck();
             void spawnHit(int x, int y);
+            void launchSnook(sf::Event &event);
     };
 } // namespace App

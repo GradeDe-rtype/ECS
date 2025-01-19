@@ -19,6 +19,7 @@ namespace ECS
 		RegisterComponent<Components::ColliderComponents>();
         RegisterComponent<Components::TextComponents>();
         RegisterComponent<Components::AudioComponents>();
+        RegisterComponent<Components::GravityComponents>();
     }
 
     void ComponentsManager::RemoveAllComponents(Entity& entity)

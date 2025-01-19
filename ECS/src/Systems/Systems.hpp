@@ -26,6 +26,7 @@ namespace ECS {
         public:
             enum class SystemType {
                 POSITION,
+                GRAVITY,
 				MOVEMENT,
                 SCALE,
 				ROTATION,
@@ -41,9 +42,10 @@ namespace ECS {
             ~SystemsManager() = default;
 
             std::unique_ptr<ASystems> &operator[](SystemType type);
-            void Update(float deltaTime);
+            void Update();
 
         private:
+            sf::Clock _clock;
             std::array<std::unique_ptr<ASystems>, (std::size_t)SystemType::COUNT> _systems;
     };
 
@@ -52,7 +54,14 @@ namespace ECS {
             DrawSystem() = default;
             ~DrawSystem() final = default;
             void Update(float deltaTime) final;
-    };  
+    };
+
+    class GravitySystem final : public ASystems {
+        public:
+            GravitySystem() = default;
+            ~GravitySystem() final = default;
+            void Update(float deltaTime) final;
+    };
 
     class EventSystem final : public ASystems {
         public:

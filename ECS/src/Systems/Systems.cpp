@@ -24,11 +24,13 @@ namespace ECS {
         _systems[(std::size_t)SystemType::TEXT] = std::make_unique<TextSystem>();
         _systems[(std::size_t)SystemType::AUDIO] = std::make_unique<AudioSystem>();
         _systems[(std::size_t)SystemType::EVENT] = std::make_unique<EventSystem>();
+        _systems[(std::size_t)SystemType::GRAVITY] = std::make_unique<GravitySystem>();
     }
 
-    void SystemsManager::Update(float deltaTime)
+    void SystemsManager::Update()
     {
         std::size_t i = 0;
+        float deltaTime = _clock.restart().asSeconds();
 
         for (auto &system : _systems) {
             if (system)
@@ -92,6 +94,21 @@ namespace ECS {
             }
         }
         ECS::GetInstance().App->getWindow().display();
+    }
+
+    void GravitySystem::Update(float deltaTime)
+    {
+        auto &gravityComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::GravityComponents>();
+        auto &transformComponent = ECS::GetInstance().getComponentsMapper()->GetComponent<Components::TransformComponents>();
+
+        for (auto &entity : _entities) {
+            if (ECS::GetInstance().getComponentsMapper()->HasComponent<Components::TransformComponents>(entity)) {
+                auto &gravity = gravityComponent.m_gravity[gravityComponent.IdToIndex_p[entity.id]];
+                auto &transform = transformComponent.m_positions[transformComponent.IdToIndex_p[entity.id]];
+
+                transform.y += gravity * deltaTime;
+            }
+        }
     }
 
     void MoveSystem::Update(float deltaTime)

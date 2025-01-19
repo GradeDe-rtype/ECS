@@ -8,7 +8,9 @@ function Update(entity)
     local x, y = getPosition(entity)
     if x >= 1400 or y >= 1000 then
         place(entity, -500, math.random(0, 1080))
-        speed = speed - 150
+        if speed > 150 then
+            speed = speed - 150
+        end
         -- speed_y = 0
         -- gravity = gravity + 10
     end
