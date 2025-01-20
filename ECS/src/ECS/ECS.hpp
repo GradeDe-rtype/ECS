@@ -52,9 +52,9 @@ namespace ECS
             [[nodiscard]] std::shared_ptr<ComponentsManager> getComponentsMapper();
             [[nodiscard]] std::shared_ptr<SystemsManager> getSystemsManager();
             [[nodiscard]] lua_State *getLuaLState();
-            [[nodiscard]] sf::Font &getBasicFont();
-            [[nodiscard]] std::size_t getFpsTextId();
-            [[nodiscard]] std::optional<std::function<void(sf::Event &)>> getEventCallBacks(sf::Event::EventType eventType);
+            [[nodiscard]] sf::Font getBasicFont() const;
+            [[nodiscard]] std::size_t getFpsTextId() const;
+            [[nodiscard]] std::optional<std::function<void(sf::Event &)>> getEventCallBacks(sf::Event::EventType eventType) const;
             void AddEventCallBack(std::function<void(sf::Event &)> callback, sf::Event::EventType eventType);
 
             [[maybe_unused]] void RemoveEntity(const Entity &entity);

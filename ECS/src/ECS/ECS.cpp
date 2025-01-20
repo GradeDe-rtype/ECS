@@ -130,10 +130,10 @@ namespace ECS
         p_eventCallBacks[eventType] = callback;
     }
 
-    std::optional<std::function<void(sf::Event &)>> ECS::getEventCallBacks(sf::Event::EventType eventType)
+    std::optional<std::function<void(sf::Event &)>> ECS::getEventCallBacks(sf::Event::EventType eventType) const
     {
         if (p_eventCallBacks.contains(eventType))
-            return p_eventCallBacks[eventType];
+            return p_eventCallBacks.at(eventType);
         return std::nullopt;
     }
 
@@ -160,12 +160,12 @@ namespace ECS
         return p_luaState;
     }
 
-    sf::Font &ECS::getBasicFont()
+    sf::Font ECS::getBasicFont() const
     {
         return p_basicFont;
     }
 
-    std::size_t ECS::getFpsTextId()
+    std::size_t ECS::getFpsTextId() const
     {
         return p_fpsTextId;
     }
